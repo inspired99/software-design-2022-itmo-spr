@@ -7,7 +7,7 @@ from src.env.envExceptions import MissingVariableError
 
 
 class TestParserAndEnv(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.parser = CommandParser()
         self.env = Environment()
 
@@ -16,16 +16,26 @@ class TestParserAndEnv(TestCase):
         self.env.set_var('b', 'C:/home/Apps')
 
     def test_parse_binds(self):
-        self.assertEqual(self.parser.parse_bind(""), ())
-        self.assertEqual(self.parser.parse_bind("let a=5 x=1"), ([('x', '1')], [('a', '5')]))
-        self.assertEqual(self.parser.parse_bind("let x=a let a=5"), ([], [('x', 'a'), ('a', '5')]))
-        self.assertEqual(self.parser.parse_bind("x=4 a=6"), ([('x', '4'), ('a', '6')], []))
-        self.assertEqual(self.parser.parse_bind("a=5 | echo a | echo 'in'"), ([('a', '5')], []))
-        self.assertEqual(self.parser.parse_bind("b=a"), ([('b', 'a')], []))
-        self.assertEqual(self.parser.parse_bind(" var=1"), ([('var', '1')], []))
+        environment = self.parser.env
+        self.assertEqual(self.parser.parse_bind(""), None)
+        self.parser.parse_bind("let a=5 x=1")
+        self.assertEqual('5', environment.get_var('a')[-1])
+        self.assertEqual('1', environment.get_var('x')[-1])
+        self.parser.parse_bind("let x=a let a=5")
+        self.assertEqual('a', environment.get_var('x')[-1])
+        self.assertEqual('5', environment.get_var('a')[-1])
+        self.parser.parse_bind("x=4 a=6")
+        self.assertEqual('4', environment.get_var('x')[-1])
+        self.assertEqual('6', environment.get_var('a')[-1])
+        self.parser.parse_bind("a=5 | echo a | echo 'in'")
+        self.assertEqual('5', environment.get_var('a')[-1])
+        self.parser.parse_bind("x=2 let x=3 x=7")
+        self.assertEqual('7', environment.get_var('x')[-1])
+
         with self.assertRaises(AssignmentError):
             self.parser.parse_bind(" var = 2")
             self.parser.parse_bind(" var= 1")
+            self.parser.parse_bind(" let x = 2")
 
     def test_parse_pipelines_commands(self):
         self.assertEqual(self.parser.parse_pipelines_and_commands(" echo a | wc 1.txt | wc  2.txt | wc 3.txt"),
@@ -33,9 +43,14 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.parser.parse_pipelines_and_commands("cat 1.txt"), {0: ('cat', '1.txt')})
         self.assertEqual(self.parser.parse_pipelines_and_commands(""), {})
         self.assertEqual(self.parser.parse_pipelines_and_commands("    "), {})
+        self.assertEqual(self.parser.parse_pipelines_and_commands("echo new| cat $file "), {0: ('echo', 'new'),
+                                                                                            1: ('cat', '$file')})
         self.assertEqual(self.parser.parse_pipelines_and_commands(" x=2  |  pwd"), {1: ('pwd', '')})
         self.assertEqual(self.parser.parse_pipelines_and_commands('cat "1.txt" | wc'), {0: ('cat', '1.txt'),
                                                                                         1: ('wc', '')})
+        self.assertEqual(self.parser.parse_pipelines_and_commands('cat 1.txt | cat -l 2.txt 3.txt'),
+                         {0: ('cat', '1.txt'), 1: ('cat', '-l 2.txt 3.txt')})
+
         with self.assertRaises(PipelineError):
             self.parser.parse_pipelines_and_commands(" | ")
             self.parser.parse_pipelines_and_commands(" cate 1.txt | wc | pwd ")
@@ -49,7 +64,7 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.env.get_var('a'), [5, 'new'])
         with self.assertRaises(MissingVariableError):
             self.assertRaises(self.env.get_var('c'))
-            self.assertEqual(self.env.get_var('ab'))
+            self.assertRaises(self.env.get_var('ab'))
 
     def test_substitution_vars(self):
         self.parser.env.set_var('a', 5)
@@ -58,7 +73,12 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.parser.subst_vars('echo "$a"'), 'echo 5')
         self.parser.env.set_var('a', 'new')
         self.assertEqual(self.parser.subst_vars('echo "$a"'), 'echo new')
+        self.assertEqual(self.parser.subst_vars('echo $a | cat $file | cat $file'), 'echo new | cat C:/home | cat '
+                                                                                    'C:/home')
         self.assertEqual(self.parser.subst_vars("cat '$file'"), "cat $file")
         self.assertEqual(self.parser.subst_vars('echo $a $avb'), 'echo new 6')
         self.assertEqual(self.parser.subst_vars('echo "$a" $avb'), 'echo new 6')
         self.assertEqual(self.parser.subst_vars("""echo '$a' "$a" """), "echo $a new ")
+
+        with self.assertRaises(MissingVariableError):
+            self.assertRaises(self.parser.env.get_var('b'))

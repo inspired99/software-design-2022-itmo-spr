@@ -6,6 +6,5 @@ class Exit(Command):
     """
     Exit command terminates bash.
     """
-    @staticmethod
-    def _invoke():
+    def _invoke(self, args: str):
         return sys.exit('Command Line is terminated. Goodbye!')

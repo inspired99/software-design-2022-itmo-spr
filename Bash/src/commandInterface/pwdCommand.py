@@ -6,6 +6,6 @@ class Pwd(Command):
     """
     Shows current working directory.
     """
-    def _invoke(self):
-        return os.getcwd()
-
+    def _invoke(self, args: str) -> str:
+        path = os.getcwd()
+        return path

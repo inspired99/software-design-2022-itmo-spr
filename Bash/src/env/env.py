@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 from src.env.envExceptions import MissingVariableError
 
 
@@ -6,6 +7,7 @@ class Environment:
     """
     Environment class to access assigned variables via env.
     """
+
     def __init__(self):
         self.__env_vars = defaultdict(list)
 

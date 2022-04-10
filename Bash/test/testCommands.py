@@ -2,4 +2,5 @@ from unittest import TestCase
 
 
 class TestCommands(TestCase):
-    pass
+    def setUp(self) -> None:
+        pass
