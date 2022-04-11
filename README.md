@@ -7,5 +7,5 @@ Software Design Course Homeworks.
 
 **HW 03 - Bash. Available commands:** ```wc, cat, echo, pwd, exit, grep, cd``` 
 
-To run tests from Bash folder of the project: ```PYTHONPATH="." python3 -m unittest```
+To run tests from Bash folder of the project: ```python3 -m unittest```, if getting a error use ```PYTHONPATH="." python3 -m unittest```
 
