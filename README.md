@@ -2,14 +2,14 @@
 
 Commands: 
 
-*```echo```
+```echo```
 
-*```exit```
+```exit```
 
-*```cat```
+```cat```
 
-*```pwd```
+```pwd```
 
-*```wc```
+```wc```
 
 To run tests ```PYTHONPATH="." python3 -m unittest``` from Bash folder.
