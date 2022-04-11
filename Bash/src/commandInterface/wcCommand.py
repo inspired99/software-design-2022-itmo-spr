@@ -1,5 +1,4 @@
 from src.commandInterface.command import Command
-from src.commandInterface.commandExceptions import FlagError
 
 
 class Wc(Command):
@@ -11,39 +10,53 @@ class Wc(Command):
     -c -> number of characters in file.
     -w -> number of words in file.
     """
-    flags = ['-l', '-c', 'w']
+    flags = ['-l', '-c', '-w']
 
-    def _invoke(self, args: str) -> str:
-        flagged = self._flagged(Wc.flags, args)
+    @staticmethod
+    def invoke(args: str) -> str:
+        flagged = Command._flagged(Wc.flags, args)
 
         result = ""
-        for file in args.split():
-            res = self.count_l_w_c(file)
-            if flagged:
-                result = result + f" {res[flagged]}" + f" {file} \n"
-            else:
-                result = result + f" {res['l']}" + f" {res['w']}" + f" {res['c']} \n"
+        for filename in args.split():
+            if filename != flagged:
+                file = Wc.read_file(filename)
 
+                res = Wc.count_l_w_c(file)
+                file_title = filename.split('/')[-1]
+                new_line = '\n'
+                if flagged:
+                    result = result + f" {res[flagged]}" + f" {file_title} " + f"{new_line}"
+                else:
+                    result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + f"{new_line}"
+
+        result = result.lstrip()
         return result
 
     @staticmethod
-    def count_l_w_c(filename):
-        counter = dict()
-        lines = 0
-        words = 0
-        characters = 0
-
+    def read_file(path):
         try:
-            with open(filename) as file:
-                for line in file:
-                    lines += 1
-                    words += len(line.split())
-                    characters += len(line.strip())
-                counter['l'] = lines
-                counter['w'] = words
-                counter['c'] = characters
-
+            with open(path) as file:
+                result = file.read()
         except FileNotFoundError:
-            raise FileNotFoundError(f"No such file: {filename}")
+            try:
+                with open(f"os.path.join(os.getcwd(), f'{path}')", "r") as f:
+                    result = f.read()
+            except FileNotFoundError:
+                raise FileNotFoundError(f"No such file: {path}")
+        result = result.rstrip('\n')
+        return result
+
+    @staticmethod
+    def count_l_w_c(file):
+        counter = dict()
+        lines = len(file.split('\n'))
+        words = len(file.split())
+        characters = 1
+        for _ in file:
+            characters += 1
+
+        counter['-l'] = lines
+        counter['-w'] = words
+        counter['-c'] = characters
 
         return counter

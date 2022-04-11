@@ -56,6 +56,8 @@ class TestParserAndEnv(TestCase):
             self.parser.parse_pipelines_and_commands(" cate 1.txt | wc | pwd ")
             self.parser.parse_pipelines_and_commands(" pwd | pwd |")
             self.parser.parse_pipelines_and_commands(" | exit | echo a ")
+            self.parser.parse_pipelines_and_commands("cat ")
+            self.parser.parse_pipelines_and_commands("cwd")
 
     def test_environment(self):
         self.assertEqual(self.env.get_var('a'), [5])

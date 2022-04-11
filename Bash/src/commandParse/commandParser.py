@@ -96,7 +96,11 @@ class CommandParser:
 
                 if command_name in val.split():
                     is_command = True
-                    args = val.replace(command_name, "").replace("'", "").replace('"', '').strip()
+                    args = val.replace(command_name, "", 1)
+                    replace_dict = {"'": "", '"': ''}
+                    for k, v in replace_dict.items():
+                        args = args.replace(k, v)
+                    args = args.strip()
                     command_dict[key] = (command_name, args)
 
             if not is_command:
