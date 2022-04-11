@@ -66,7 +66,6 @@ class TestCommands(TestCase):
         self.assertEqual(test_bash.run('echo test/test_files/wc_test_1.txt | wc'), '3 6 27  wc_test_1.txt\n')
         self.assertEqual(test_bash.run('echo test/test_files/cat_test_1.txt | cat'),
                          'Cat test number 1 passed! Success!\n')
-
         with self.assertRaises(SystemExit):
             test_bash.run('wc test/test_files/wc_test_1.txt | exit')
             test_bash.run('pwd | echo')
