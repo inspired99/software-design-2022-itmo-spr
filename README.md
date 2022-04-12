@@ -1,11 +1,25 @@
 # software-design-2022-itmo-spr
 Software Design Course Homeworks.
 
-**HW 01 - Bash. Available commands:** ```wc, cat, echo, pwd, exit```
+## Elementary Bash.
 
-**HW 02 - Bash. Available commands:** ```wc, cat, echo, pwd, exit, grep```
+**Commands**: 
 
-**HW 03 - Bash. Available commands:** ```wc, cat, echo, pwd, exit, grep, cd``` 
+* ```wc```
+
+* ```cat```
+
+*  ```exit```
+
+* ```ls```
+ 
+* ```cd```
+
+* ```echo```
+
+* ```pwd```
+
+To launch Bash run ```main.py```.
 
 To run tests from Bash folder of the project: ```python3 -m unittest```, if getting a error use ```PYTHONPATH="." python3 -m unittest```
 
