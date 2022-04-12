@@ -5,9 +5,9 @@ Software Design Course Homeworks.
 
 **Commands**: 
 
-* ```wc``` with flags (```-l```, ```-w```, ```-c```) 
+* ```wc``` with flags ```-l```, ```-w```, ```-c```
 
-* ```cat``` with flags (```-s```, ```-n```)
+* ```cat``` with flags ```-s```, ```-n```
 
 *  ```exit```
 
@@ -19,7 +19,9 @@ Software Design Course Homeworks.
 
 * ```pwd```
 
-To launch Bash run ```main.py```.
+To launch Bash run ```main.py```
 
-To run tests from Bash folder of the project: ```python3 -m unittest```, if getting a error use ```PYTHONPATH="." python3 -m unittest```
+To run tests from Bash folder of the project: ```python3 -m unittest``` 
+
+If getting a error use ```PYTHONPATH="." python3 -m unittest```
 
