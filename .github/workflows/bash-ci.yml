@@ -1,4 +1,4 @@
-# CI for Bash project. Changes in each branches are tracked and CI used to run tests and linter.
+# CI for Bash project. Changes in each branches are tracked and CI runs tests and uses linter.
 
 name: Bash CI
 
@@ -22,4 +22,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
-
+  
+  run_tests:
+    runs-on: ubuntu-latest
+    
+    steps: 
+    - name: Run tests
+      run: coverage run python3 -m unittest
