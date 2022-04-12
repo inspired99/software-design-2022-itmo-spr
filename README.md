@@ -5,9 +5,9 @@ Software Design Course Homeworks.
 
 **Commands**: 
 
-* ```wc```
+* ```wc``` with flags (```-l```, ```-w```, ```-c```) 
 
-* ```cat```
+* ```cat``` with flags (```-s```, ```-n```)
 
 *  ```exit```
 
