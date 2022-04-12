@@ -54,4 +54,4 @@ jobs:
 
     - name: Run tests
       run: |
-         pytest test
+         python3 -m unittest ./test
