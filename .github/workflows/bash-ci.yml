@@ -54,5 +54,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python3 -m unittest
-        working-directory: test
+          python -m unittest discover -s ./test
