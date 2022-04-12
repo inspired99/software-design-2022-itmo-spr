@@ -1,7 +1,6 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# CI for Bash project. Changes in each branches are tracked and CI used to run tests and linter.
 
-name: Python CI
+name: Bash CI
 
 on:
   push:
@@ -17,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+    - uses: actions/checkout@v3
+    
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: "3.10"
+        python-version: '3.8'
 
