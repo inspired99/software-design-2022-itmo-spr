@@ -1,6 +1,6 @@
 # CI for Bash project using Github ACtions. CI runs tests and adds linter on all branches.
 
-name: Python CI
+name: Bash CI
 
 on:
   push:
@@ -13,6 +13,7 @@ on:
 jobs:
   run_linter:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
     - uses: actions/checkout@v2
@@ -54,4 +55,4 @@ jobs:
 
     - name: Run tests
       run: |
-         python3 -m unittest ./test
+         python3 -m unittest test/testCommandsBash.py
