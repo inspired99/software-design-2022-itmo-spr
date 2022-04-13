@@ -1,19 +1,17 @@
 import os
 
 from src.commandInterface.command import Command
-from src.commandInterface.commandExceptions import CommandExecutionError
 
 
 class Cd(Command):
     """
     Changes current directory.
     """
-    def _invoke(self, args: str):
-        if not self.args:
+    @staticmethod
+    def invoke(args: str) -> str:
+        if not args:
             return ""
-        if len(self.args) > 1:
-            raise CommandExecutionError("Too many arguments for cd command")
-        try:
-            os.chdir(self.args[0])
-        except FileNotFoundError as e:
-            raise CommandExecutionError from e
+        if len(args.split()) > 1:  # what if ' ' in filepath?
+            raise RuntimeError("Too many arguments for cd command")
+        os.chdir(args)
+        return ''

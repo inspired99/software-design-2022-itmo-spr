@@ -5,11 +5,10 @@ class Command:
     """
     Common command interface for all deriving commands.
     """
-    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit']
+    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit', 'ls', 'cd']
 
     def __init__(self, name, args):
         self.name = name
-        self.args = args
 
     @staticmethod
     def invoke(args: str) -> str:
