@@ -7,9 +7,6 @@ class Command:
     """
     command_list = ['cat', 'wc', 'pwd', 'echo', 'exit', 'ls', 'cd']
 
-    def __init__(self, name, args):
-        self.name = name
-
     @staticmethod
     def invoke(args: str) -> str:
         """
