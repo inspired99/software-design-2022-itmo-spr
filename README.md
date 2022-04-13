@@ -2,6 +2,17 @@
 Software Design Course Homeworks.
 
 ## Elementary Bash.
+**Project Structure**:
+
+```bash``` - command line functionality 
+
+```commandInterface``` - command interface and commands
+
+```commandParse``` - command parser
+
+```env``` - environment
+
+```test``` - tests
 
 **Commands**: 
 
