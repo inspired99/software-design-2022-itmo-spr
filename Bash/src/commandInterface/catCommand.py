@@ -1,5 +1,4 @@
 from src.commandInterface.command import Command
-import os
 
 
 class Cat(Command):
@@ -9,32 +8,38 @@ class Cat(Command):
     -n -> numbers of lines.
     -s -> omit blank lines
     """
-    flags = ['n', 's']
+    flags = ['-n', '-s']
 
-    def _invoke(self, args: str) -> str:
+    @staticmethod
+    def invoke(args: str) -> str:
+
         if not args:
             raise FileNotFoundError("No files to read from.")
 
-        flagged = self._flagged(Cat.flags, args)
+        flagged = Command._flagged(Cat.flags, args)
+
         files = args.split()
+
         result = []
 
         for filename in files:
-            try:
-                with open(filename) as file:
-                    content = self._read_file(file, flagged)
-                    result.append(content)
-            except FileNotFoundError:
+            if filename != flagged:
+
                 try:
-                    with open(os.path.join(os.getcwd(), "my_file.txt"), "r") as f:
-                        content = f.read()
+                    with open(filename) as file:
+                        content = Cat._read_file(file, flagged)
                         result.append(content)
                 except FileNotFoundError:
-                    raise FileNotFoundError(f"No such file: {filename}")
+                    try:
+                        with open(f"os.path.join(os.getcwd(), f'{filename}')", "r") as f:
+                            content = Cat._read_file(f, flagged)
+                            result.append(content)
+                    except FileNotFoundError:
+                        raise FileNotFoundError(f"No such file: {filename}")
 
         output = ""
         for file_output in result:
-            output.join(file_output)
+            output = output.join(file_output)
 
         return output
 
@@ -43,9 +48,9 @@ class Cat(Command):
         result = []
         if flag == "-n":
             for index, line in enumerate(file):
-                result.append('index ' + line)
+                result.append(f'{index + 1} ' + line)
         elif flag == "-s":
-            lines = [i for i in file.readlines() if i]
+            lines = [i for i in file.readlines() if i != '\n']
             result = lines
         else:
             result = file.readlines()

@@ -5,5 +5,7 @@ class Echo(Command):
     """
     Display string that is passed as an argument.
     """
-    def _invoke(self, args: str) -> str:
+
+    @staticmethod
+    def invoke(args: str) -> str:
         return args

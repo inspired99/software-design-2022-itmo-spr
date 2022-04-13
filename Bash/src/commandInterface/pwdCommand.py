@@ -1,11 +1,14 @@
-from src.commandInterface.command import Command
 import os
+
+from src.commandInterface.command import Command
 
 
 class Pwd(Command):
     """
     Shows current working directory.
     """
-    def _invoke(self, args: str) -> str:
+
+    @staticmethod
+    def invoke(args="") -> str:
         path = os.getcwd()
         return path
