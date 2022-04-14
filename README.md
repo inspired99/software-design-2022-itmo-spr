@@ -30,6 +30,8 @@ Software Design Course Homeworks.
 
 * ```pwd```
 
+* ```grep```
+
 To launch Bash run ```main.py```
 
 To run tests from Bash folder of the project: ```python3 -m unittest``` 
