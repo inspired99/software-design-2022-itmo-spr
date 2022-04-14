@@ -26,7 +26,7 @@ class Cat(Command):
 
         for filename in files:
             if filename != flagged:
-                print(os.path.join(os.getcwd(), filename), filename)
+
                 try:
                     with open(filename) as file:
                         content = Cat._read_file(file, flagged)
