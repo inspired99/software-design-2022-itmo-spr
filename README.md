@@ -4,15 +4,15 @@ Software Design Course Homeworks.
 ## Elementary Bash.
 **Project Structure**:
 
-```bash``` - command line functionality 
+```bash``` - command line functionality like running bash and reading from std input in a loop
 
-```commandInterface``` - command interface and commands
+```commandInterface``` - command interface which is implemented in each command (method ```invoke()```).
 
-```commandParse``` - command parser
+```commandParse``` - command parser which supports variables assignment (```let``` and ```=```), makes substitutions from environment and distinguishes pipelines and command with their arguments 
 
-```env``` - environment
+```env``` - environment (map of variables and their values within environment with getter and setter)
 
-```test``` - tests
+```test``` - tests for commands, bash, environment and parser
 
 **Commands**: 
 
