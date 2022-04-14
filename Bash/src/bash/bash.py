@@ -1,11 +1,14 @@
 import sys
 
 from src.commandInterface.catCommand import Cat
+from src.commandInterface.commandExceptions import FlagError
 from src.commandInterface.echoCommand import Echo
 from src.commandInterface.exitCommand import Exit
 from src.commandInterface.pwdCommand import Pwd
 from src.commandInterface.wcCommand import Wc
 from src.commandParse.commandParser import CommandParser
+from src.commandParse.parseExceptions import AssignmentError, ParseException, PipelineError
+from src.env.envExceptions import MissingVariableError
 
 
 class CommandLine:
@@ -18,15 +21,19 @@ class CommandLine:
         self.parser = CommandParser()
         self.command_map = {'wc': Wc, 'pwd': Pwd, 'cat': Cat, 'echo': Echo, 'exit': Exit}
 
-    def run(self, default_inp=None) -> None:
+    def run(self, default_inp=None):
         while True:
             if not default_inp:
                 user_input = sys.stdin.readline()
             else:
                 user_input = default_inp
-            input_str = self.parser.subst_vars(user_input)
-            self.parser.parse_bind(input_str)
-            parsed_pipelines_and_commands = self.parser.parse_pipelines_and_commands(input_str)
+            try:
+                input_str = self.parser.subst_vars(user_input)
+                self.parser.parse_bind(input_str)
+                parsed_pipelines_and_commands = self.parser.parse_pipelines_and_commands(input_str)
+            except (ParseException, PipelineError, AssignmentError, MissingVariableError) as e:
+                print(str(e))
+                continue
             results = []
             number_of_pipelines = len(parsed_pipelines_and_commands.keys()) - 1
 
@@ -39,7 +46,11 @@ class CommandLine:
                 if command not in self.command_map:
                     continue
                 command_instance = self.command_map[command]
-                result = command_instance.invoke(args)
+                try:
+                    result = command_instance.invoke(args)
+                except (FileNotFoundError, FlagError) as e:
+                    print(str(e))
+                    continue
                 if number_of_pipelines > 0 and len(results) < number_of_pipelines:
                     results.append(result)
                     continue

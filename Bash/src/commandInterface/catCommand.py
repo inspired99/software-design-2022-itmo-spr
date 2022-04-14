@@ -1,3 +1,5 @@
+import os
+
 from src.commandInterface.command import Command
 
 
@@ -24,14 +26,14 @@ class Cat(Command):
 
         for filename in files:
             if filename != flagged:
-
+                print(os.path.join(os.getcwd(), filename), filename)
                 try:
                     with open(filename) as file:
                         content = Cat._read_file(file, flagged)
                         result.append(content)
                 except FileNotFoundError:
                     try:
-                        with open(f"os.path.join(os.getcwd(), f'{filename}')", "r") as f:
+                        with open(os.path.join(os.getcwd(), filename), "r") as f:
                             content = Cat._read_file(f, flagged)
                             result.append(content)
                     except FileNotFoundError:
