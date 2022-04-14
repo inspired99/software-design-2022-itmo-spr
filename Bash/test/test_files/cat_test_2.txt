@@ -1,2 +1,2 @@
-Read from absolute path! 
+Read path!
 Success!
