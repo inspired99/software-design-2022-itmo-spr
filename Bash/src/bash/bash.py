@@ -1,9 +1,11 @@
 import sys
 
 from src.commandInterface.catCommand import Cat
+from src.commandInterface.cdCommand import Cd
 from src.commandInterface.commandExceptions import FlagError
 from src.commandInterface.echoCommand import Echo
 from src.commandInterface.exitCommand import Exit
+from src.commandInterface.lsCommand import Ls
 from src.commandInterface.pwdCommand import Pwd
 from src.commandInterface.wcCommand import Wc
 from src.commandParse.commandParser import CommandParser
@@ -19,7 +21,8 @@ class CommandLine:
     def __init__(self):
         print('Command Line started. Hello!')
         self.parser = CommandParser()
-        self.command_map = {'wc': Wc, 'pwd': Pwd, 'cat': Cat, 'echo': Echo, 'exit': Exit}
+        self.command_map = {'wc': Wc, 'pwd': Pwd, 'cat': Cat,
+                            'echo': Echo, 'exit': Exit, 'cd': Cd, 'ls': Ls}
 
     def run(self, default_inp=None):
         while True:

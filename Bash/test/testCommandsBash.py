@@ -3,9 +3,11 @@ from unittest import TestCase
 
 from src.bash.bash import CommandLine
 from src.commandInterface.catCommand import Cat
+from src.commandInterface.cdCommand import Cd
 from src.commandInterface.commandExceptions import FlagError
 from src.commandInterface.echoCommand import Echo
 from src.commandInterface.exitCommand import Exit
+from src.commandInterface.lsCommand import Ls
 from src.commandInterface.pwdCommand import Pwd
 from src.commandInterface.wcCommand import Wc
 
@@ -19,6 +21,8 @@ class TestCommands(TestCase):
         self.exit = Exit
         self.echo = Echo
         self.wc = Wc
+        self.cd = Cd
+        self.ls = Ls
 
     def test_main(self) -> None:
         self.assertTrue(self.bash())
@@ -66,6 +70,42 @@ class TestCommands(TestCase):
         with self.assertRaises(FlagError):
             self.wc.invoke('-f arg')
             self.wc.invoke('arg -l')
+
+    def test_cd(self):
+        path = self.pwd.invoke('')
+
+        self.cd.invoke('test/test_files')
+        self.assertTrue(self.pwd.invoke('').endswith('test_files'))
+        self.cd.invoke('../..')
+
+        self.assertEqual(path, self.pwd.invoke(''))
+        self.cd.invoke('')
+
+        self.assertEqual(path, self.pwd.invoke(''))
+        self.cd.invoke(self.pwd.invoke(''))
+
+        self.assertEqual(path, self.pwd.invoke(''))
+
+        try:
+            self.cd.invoke('bad path')
+            self.assertTrue(False)
+        except RuntimeError:
+            self.assertTrue(True)
+
+    def test_ls(self):
+        self.cd.invoke('./test/test_files/test_ls')
+        self.assertEqual({'file1', 'file2'}, set(self.ls.invoke('').split('\n')))
+        self.cd.invoke('../../..')
+
+        self.assertEqual({"file1", "file2"}, set(self.ls.invoke('test/test_files/test_ls').split('\n')))
+
+        try:
+            self.ls.invoke('bad path')
+            self.assertTrue(False)
+        except RuntimeError:
+            self.assertTrue(True)
+
+        self.assertEqual(self.ls.invoke(''), self.ls.invoke(Pwd.invoke('')))
 
     def test_pipelines(self) -> None:
         test_bash = CommandLine()

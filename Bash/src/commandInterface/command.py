@@ -5,7 +5,7 @@ class Command:
     """
     Common command interface for all deriving commands.
     """
-    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit']
+    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit', 'ls', 'cd']
 
     @staticmethod
     def invoke(args: str) -> str:
