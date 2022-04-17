@@ -33,3 +33,4 @@ To run tests from Bash folder of the project: ```python3 -m unittest```
 
 If getting a error use ```PYTHONPATH="." python3 -m unittest```
 
+GitHub actions were used as CI
