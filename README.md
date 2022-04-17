@@ -26,7 +26,7 @@ Software Design Course Homeworks.
 
 * ```pwd```
 
-* ```grep```
+* ```grep``` (in progress)
 
 To launch Bash run ```main.py```
 
