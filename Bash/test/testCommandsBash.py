@@ -27,12 +27,14 @@ class TestCommands(TestCase):
         self.assertEqual(self.pwd.invoke(), os.getcwd())
 
     def test_cat(self) -> None:
-        self.assertEqual(self.cat.invoke('test/test_files/cat_test_1.txt'), 'Cat test number 1 passed! Success!\n')
-        self.assertEqual(self.cat.invoke('test/test_files/cat_test_2.txt'),
-                         """Read from absolute path! \nSuccess!\n""")
-        self.assertEqual(self.cat.invoke('-n test/test_files/cat_test_3.txt'),
-                         """1 this are real numbers of lines:\n2 2\n3 3\n4 4\n5 5\n6 6\n""")
-        self.assertEqual(self.cat.invoke('-s test/test_files/cat_test_4.txt'),
+        self.assertEqual(self.cat.invoke(os.path.dirname(__file__) + '/test_files/cat_test_1.txt'),
+                         'Cat test number 1 passed! Success!\n')
+        self.assertEqual(self.cat.invoke(os.path.dirname(__file__) + '/test_files/cat_test_2.txt'),
+                         """Read path!\nSuccess!\n""")
+        self.assertEqual(
+            self.cat.invoke(f'-n {os.path.dirname(__file__)}/test_files/cat_test_3.txt'),
+            """1 this are real numbers of lines:\n2 2\n3 3\n4 4\n5 5\n6 6\n""")
+        self.assertEqual(self.cat.invoke(f'-s {os.path.dirname(__file__)}/test_files/cat_test_4.txt'),
                          'next line should be omitted:\nSuccess!\n')
 
         with self.assertRaises(FlagError):
@@ -49,12 +51,17 @@ class TestCommands(TestCase):
         self.assertEqual(self.echo.invoke('echo test'), 'echo test')
 
     def test_wc(self) -> None:
-        self.assertEqual(self.wc.invoke('test/test_files/wc_test_1.txt'), '3 6 27  wc_test_1.txt\n')
-        self.assertEqual(self.wc.invoke('test/test_files/wc_test_1.txt test/test_files/wc_test_2.txt'),
-                         '3 6 27  wc_test_1.txt\n 3 6 27  wc_test_2.txt\n')
-        self.assertEqual(self.wc.invoke('-l test/test_files/wc_test_1.txt'), '3 wc_test_1.txt \n')
-        self.assertEqual(self.wc.invoke('-w test/test_files/wc_test_1.txt'), '6 wc_test_1.txt \n')
-        self.assertEqual(self.wc.invoke('-c test/test_files/wc_test_1.txt'), '27 wc_test_1.txt \n')
+        self.assertEqual(self.wc.invoke(f'{os.path.dirname(__file__)}/test_files/wc_test_1.txt'),
+                         '3 6 27  wc_test_1.txt\n')
+        self.assertEqual(self.wc.invoke(
+            f'{os.path.dirname(__file__)}/test_files/wc_test_1.txt {os.path.dirname(__file__)}/test_files/wc_test_2.txt'),
+            '3 6 27  wc_test_1.txt\n 3 6 27  wc_test_2.txt\n')
+        self.assertEqual(self.wc.invoke(f'-l {os.path.dirname(__file__)}/test_files/wc_test_1.txt'),
+                         '3 wc_test_1.txt \n')
+        self.assertEqual(self.wc.invoke(f'-w {os.path.dirname(__file__)}/test_files/wc_test_1.txt'),
+                         '6 wc_test_1.txt \n')
+        self.assertEqual(self.wc.invoke(f'-c {os.path.dirname(__file__)}/test_files/wc_test_1.txt'),
+                         '27 wc_test_1.txt \n')
 
         with self.assertRaises(FlagError):
             self.wc.invoke('-f arg')
@@ -63,18 +70,19 @@ class TestCommands(TestCase):
     def test_pipelines(self) -> None:
         test_bash = CommandLine()
         self.assertEqual(test_bash.run('echo a | echo b | echo c'), 'c')
-        self.assertEqual(test_bash.run('echo test/test_files/wc_test_1.txt | wc'), '3 6 27  wc_test_1.txt\n')
-        self.assertEqual(test_bash.run('echo test/test_files/cat_test_1.txt | cat'),
+        self.assertEqual(test_bash.run(f'echo {os.path.dirname(__file__)}/test_files/wc_test_1.txt | wc'),
+                         '3 6 27  wc_test_1.txt\n')
+        self.assertEqual(test_bash.run(f'echo {os.path.dirname(__file__)}/test_files/cat_test_1.txt | cat'),
                          'Cat test number 1 passed! Success!\n')
         with self.assertRaises(SystemExit):
-            test_bash.run('wc test/test_files/wc_test_1.txt | exit')
+            test_bash.run(f'wc {os.path.dirname(__file__)}/test_files/wc_test_1.txt | exit')
             test_bash.run('pwd | echo')
 
     def test_subst(self) -> None:
         test_bash = CommandLine()
         test_bash.run('a=6')
         test_bash.run('b=2')
-        test_bash.run('let x=test/test_files/wc_test_1.txt')
+        test_bash.run(f'let x={os.path.dirname(__file__)}/test_files/wc_test_1.txt')
         self.assertEqual(test_bash.run('echo $a'), '6')
         self.assertEqual(test_bash.run('echo $b'), '2')
         self.assertEqual(test_bash.run('echo $a | echo $b'), '2')

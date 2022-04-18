@@ -1,3 +1,5 @@
+import os
+
 from src.commandInterface.command import Command
 
 
@@ -31,7 +33,7 @@ class Cat(Command):
                         result.append(content)
                 except FileNotFoundError:
                     try:
-                        with open(f"os.path.join(os.getcwd(), f'{filename}')", "r") as f:
+                        with open(os.path.join(os.getcwd(), filename), "r") as f:
                             content = Cat._read_file(f, flagged)
                             result.append(content)
                     except FileNotFoundError:
