@@ -7,5 +7,5 @@ class Echo(Command):
     """
 
     @staticmethod
-    def invoke(args: str) -> str:
-        return args
+    def invoke(args: list) -> str:
+        return "".join(args)

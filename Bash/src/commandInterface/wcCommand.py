@@ -1,3 +1,5 @@
+import os
+
 from src.commandInterface.command import Command
 
 
@@ -13,11 +15,11 @@ class Wc(Command):
     flags = ['-l', '-c', '-w']
 
     @staticmethod
-    def invoke(args: str) -> str:
+    def invoke(args: list) -> str:
         flagged = Command._flagged(Wc.flags, args)
 
         result = ""
-        for filename in args.split():
+        for filename in args:
             if filename != flagged:
                 file = Wc.read_file(filename)
 
@@ -39,7 +41,7 @@ class Wc(Command):
                 result = file.read()
         except FileNotFoundError:
             try:
-                with open(f"os.path.join(os.getcwd(), f'{path}')", "r") as f:
+                with open("".join((os.getcwd(), path))) as f:
                     result = f.read()
             except FileNotFoundError:
                 raise FileNotFoundError(f"No such file: {path}")

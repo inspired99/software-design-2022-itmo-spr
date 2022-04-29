@@ -14,3 +14,15 @@ class AssignmentError(ParseException):
     def __init__(self, message):
         self.message = message
         super().__init__(message)
+
+
+class CommandNotFoundError(ParseException):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class SubstitutionError(ParseException):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)

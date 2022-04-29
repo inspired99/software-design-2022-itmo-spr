@@ -13,14 +13,14 @@ class Cat(Command):
     flags = ['-n', '-s']
 
     @staticmethod
-    def invoke(args: str) -> str:
+    def invoke(args):
 
         if not args:
             raise FileNotFoundError("No files to read from.")
 
         flagged = Command._flagged(Cat.flags, args)
 
-        files = args.split()
+        files = args
 
         result = []
 
@@ -33,7 +33,7 @@ class Cat(Command):
                         result.append(content)
                 except FileNotFoundError:
                     try:
-                        with open(os.path.join(os.getcwd(), filename), "r") as f:
+                        with open("".join((os.getcwd(), filename))) as f:
                             content = Cat._read_file(f, flagged)
                             result.append(content)
                     except FileNotFoundError:

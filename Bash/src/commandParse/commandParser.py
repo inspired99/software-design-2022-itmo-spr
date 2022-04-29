@@ -1,9 +1,9 @@
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from copy import deepcopy
 
 from src.commandInterface.command import Command
-from src.commandParse.parseExceptions import PipelineError, AssignmentError
+from src.commandParse.parseExceptions import AssignmentError, CommandNotFoundError, PipelineError
 from src.env.env import Environment
 
 
@@ -80,31 +80,63 @@ class CommandParser:
         if not input_string.strip():
             return {}
         regex = r"([^|]*)"
+        command_list = Command.command_list + ['let', '=', "$"]
+        regex_quotes = r"""([^'"]*)(['"][^'"]*["'])*([^'"]*)"""
+
         split_pipelines = [i.strip() for i in re.findall(regex, input_string) if i]
-
         pipelines_content = {k: v for k, v in enumerate(split_pipelines)}
-        command_dict = {}
-        command_list = Command.command_list + ['let', '=']
+        for k, v in pipelines_content.items():
+            if not v:
+                raise PipelineError("Missing correct command in pipeline.")
 
-        for key, val in pipelines_content.items():
+        pipelines = {}
+
+        if not split_pipelines or not split_pipelines[0]:
+            raise PipelineError("Missing correct command in pipeline.")
+
+        for order, elem in pipelines_content.items():
+            command = elem.split()[0]
             is_command = False
-            for command_name in command_list:
-                if command_name == "=" and "=" in input_string:
-                    is_command = True
-                if command_name == "let" and "let" in input_string:
-                    is_command = True
+            if command in command_list:
+                is_command = True
 
-                if command_name in val.split():
-                    is_command = True
-                    args = val.replace(command_name, "", 1)
-                    replace_dict = {"'": "", '"': ''}
-                    for k, v in replace_dict.items():
-                        args = args.replace(k, v)
-                    args = args.strip()
-                    command_dict[key] = (command_name, args)
+            if "let" in command or "=" in command or "$" in command:
+                continue
 
             if not is_command:
-                raise PipelineError("Missing correct command in pipeline.")
+                raise CommandNotFoundError(f"Command not found: {command}")
+
+            elem = elem.replace(command, '', 1)
+            all_args = re.findall(regex_quotes, elem)
+            args = []
+            for tuple_arg in all_args:
+                for arg in tuple_arg:
+                    if arg.strip():
+                        args.append(arg.strip())
+
+            pipelines[(command, order)] = args
+
+        command_dict = defaultdict(list)
+
+        replace_dict = {"'": '', '"': ""}
+        for command, args in pipelines.items():
+            cleaned_args = []
+            for arg in args:
+                to_be_replaced = False
+                for k, v in replace_dict.items():
+                    if k in arg:
+                        to_be_replaced = True
+                        arg_start = arg.find(k)
+                        arg = arg.replace(k, v, 1)
+                        arg_end = arg.find(k)
+                        new_arg = arg[arg_start:arg_end]
+                        new_arg = new_arg.replace(k, v, 1)
+                        cleaned_args.append(new_arg)
+
+                if not to_be_replaced:
+                    cleaned_args.extend(arg.split())
+            command_dict[command].extend(cleaned_args)
+
         return command_dict
 
     def subst_vars(self, input_string: str) -> str:
@@ -113,19 +145,14 @@ class CommandParser:
         :param input_string: raw string.
         :return: string with replaced vars with their values from env.
         """
-        str_to_change = deepcopy(input_string)
-        regex_dollar_sign = r"([^']\$\w*)"
-
-        replace_dict = {"$": "", '"': ''}
-        indexes_to_change = []
-        for ind in re.finditer(regex_dollar_sign, str_to_change):
-            indexes_to_change.append((ind.start(), ind.end()))
-
-        to_subst = re.findall(regex_dollar_sign, input_string)
+        str_to_change = " " + (deepcopy(input_string))
+        regex_dollar_sign = r"([^']\$[\S]*)"
+        replace_dict = {"$": " ", '"': ' '}
+        to_subst = re.findall(regex_dollar_sign, str_to_change)
         for k, v in replace_dict.items():
-            to_subst = [i.replace(k, v) for i in to_subst]
-
-        to_subst = [i.strip() for i in to_subst if i]
+            to_subst = [i.replace(k, v) + " " for i in to_subst]
+            to_subst = [i.strip().split() for i in to_subst]
+            to_subst = [item for sublist in to_subst for item in sublist]
 
         substitute_dict = {}
         c = Counter(to_subst)
@@ -133,17 +160,19 @@ class CommandParser:
         for var in set(to_subst):
             val = self.env.get_var(var)
             substitute_dict[var] = val
-
         substitute_dict = {k: v for k, v in substitute_dict.items() if k}
-
         for var, values in substitute_dict.items():
             if values:
-                regex = r'[\s^"]\$' + var + r"""[\S]*"""
-                str_to_change = re.sub(regex, " " + str(values[-1]), str_to_change, c[var])
+                regex = r"""("\$""" + var + r""")|(?!\')\$""" + var + r"""(?!\')"""
+                str_to_change = re.sub(regex, str(values[-1]), str_to_change, c[var])
+                print(str_to_change)
                 str_to_change = re.sub("\\s+", ' ', str_to_change)
 
         stop_symbols = ["'", '"']
         for symbol in stop_symbols:
             str_to_change = str_to_change.replace(symbol, '')
+
+        str_to_change = " ".join(str_to_change.split())
+        str_to_change = str_to_change.strip()
 
         return str_to_change
