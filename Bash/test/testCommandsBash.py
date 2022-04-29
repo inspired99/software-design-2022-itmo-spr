@@ -30,7 +30,7 @@ class TestCommands(TestCase):
         self.assertEqual(self.cat.invoke([os.path.dirname(__file__) + '/test_files/cat_test_1.txt']),
                          'Cat test number 1 passed! Success!')
         self.assertEqual(
-            self.cat.invoke([f'-n', '/test_files/cat_test_3.txt']),
+            self.cat.invoke([f'-n', f'{os.path.dirname(__file__)}/test_files/cat_test_3.txt']),
             """1 this are real numbers of lines:\n2 2\n3 3\n4 4\n5 5\n6 6\n""")
         self.assertEqual(self.cat.invoke(['-s', f'{os.path.dirname(__file__)}/test_files/cat_test_4.txt']),
                          'next line should be omitted:\nSuccess!\n')
@@ -77,8 +77,9 @@ class TestCommands(TestCase):
         self.assertEqual(test_bash.run(f'echo {os.path.dirname(__file__)}/test_files/cat_test_1.txt | cat'),
                          'Cat test number 1 passed! Success!')
         self.assertEqual(test_bash.run('x=t | echo x'), 'x')
-        self.assertEqual(test_bash.run(f'$a {os.path.dirname(__file__)}/test_files/test_pipelines.txt | wc'),
-                         '6 11 42  cat_test_3.txt\n')
+        self.assertEqual(
+            test_bash.run(f' pwd | echo | $a {os.path.dirname(__file__)}/test_files/cat_test_2.txt | echo '),
+            """Read path!\nSuccess!\n""")
 
         with self.assertRaises(SystemExit):
             test_bash.run(f'wc {os.path.dirname(__file__)}/test_files/wc_test_1.txt | exit')
