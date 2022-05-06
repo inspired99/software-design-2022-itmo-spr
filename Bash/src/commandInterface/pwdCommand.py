@@ -9,6 +9,6 @@ class Pwd(Command):
     """
 
     @staticmethod
-    def invoke(args=[]) -> str:
+    def invoke(args=None) -> str:
         path = os.getcwd()
         return path

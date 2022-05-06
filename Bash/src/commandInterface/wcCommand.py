@@ -16,6 +16,9 @@ class Wc(Command):
 
     @staticmethod
     def invoke(args: list) -> str:
+        if not args:
+            raise FileNotFoundError("No files to read from.")
+
         flagged = Command._flagged(Wc.flags, args)
 
         result = ""
