@@ -25,6 +25,10 @@ class Cat(Command):
         result = []
 
         for filename in files:
+            if Cat.from_pipeline:
+                Cat.from_pipeline = False
+                return filename
+
             if filename != flagged:
 
                 try:

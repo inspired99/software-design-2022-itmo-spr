@@ -29,16 +29,29 @@ class Wc(Command):
                 res = Wc.count_l_w_c(file)
                 file_title = filename.split('/')[-1]
                 new_line = '\n'
-                if flagged:
-                    result = result + f" {res[flagged]}" + f" {file_title} " + f"{new_line}"
-                else:
-                    result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + f"{new_line}"
 
-        result = result.lstrip()
+                if not Wc.from_pipeline:
+                    if flagged:
+                        result = result + f" {res[flagged]}" + f" {file_title} " + f"{new_line}"
+                    else:
+                        result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + f"{new_line}"
+                else:
+                    if flagged:
+                        result = result + f" {res[flagged]}" + f"{new_line}"
+                    else:
+                        result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}" + f"{new_line}"
+
+        Wc.from_pipeline = False
+        result = result.strip()
         return result
 
     @staticmethod
     def read_file(path):
+
+        if Wc.from_pipeline:
+            print('from pipe')
+            return path
+
         try:
             with open(path) as file:
                 result = file.read()

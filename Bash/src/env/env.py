@@ -1,7 +1,5 @@
 from collections import defaultdict
 
-from src.env.envExceptions import MissingVariableError
-
 
 class Environment:
     """
@@ -14,7 +12,7 @@ class Environment:
     def get_var(self, var):
         res = self.__env_vars[var]
         if not res:
-            raise MissingVariableError(f"No such variable in environment: {var}")
+            return ""
         return res
 
     def set_var(self, var, val):

@@ -4,7 +4,6 @@ from unittest import TestCase
 from src.commandParse.commandParser import CommandParser
 from src.commandParse.parseExceptions import AssignmentError, PipelineError
 from src.env.env import Environment
-from src.env.envExceptions import MissingVariableError
 
 
 class TestParserAndEnv(TestCase):
@@ -73,9 +72,8 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.env.get_var('var'), ['a'])
         self.env.set_var('a', 'new')
         self.assertEqual(self.env.get_var('a'), [5, 'new'])
-        with self.assertRaises(MissingVariableError):
-            self.assertRaises(self.env.get_var('c'))
-            self.assertRaises(self.env.get_var('ab'))
+        self.assertEqual(self.env.get_var('c'), '')
+        self.assertEqual(self.env.get_var('ab'), '')
 
     def test_substitution_vars(self):
         self.parser.env.set_var('a', 5)
@@ -93,6 +91,4 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.parser.subst_vars('echo "$a" $avb'), 'echo new 6')
         self.assertEqual(self.parser.subst_vars("""echo '$a' "$a" """), "echo $a new")
         self.assertEqual(self.parser.subst_vars('$p$d'), 'pwd')
-
-        with self.assertRaises(MissingVariableError):
-            self.assertRaises(self.parser.env.get_var('b'))
+        self.assertEqual(self.parser.subst_vars('echo $b'), 'echo')

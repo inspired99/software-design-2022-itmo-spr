@@ -3,6 +3,7 @@ from collections import Counter, defaultdict
 from copy import deepcopy
 
 from src.commandInterface.command import Command
+from src.commandInterface.externalCommand import ExternalCommand
 from src.commandParse.parseExceptions import AssignmentError, CommandNotFoundError, PipelineError
 from src.env.env import Environment
 
@@ -80,7 +81,7 @@ class CommandParser:
         if not input_string.strip():
             return {}
         regex = r"([^|]*)"
-        command_list = Command.command_list + ['let', '=', "$"]
+        command_list = Command.command_list + ['let', '=', "$"] + ExternalCommand.external_commands_list
         regex_quotes = r"""([^'"]*)(['"][^'"]*["'])*([^'"]*)"""
 
         split_pipelines = [i.strip() for i in re.findall(regex, input_string) if i]
@@ -159,13 +160,16 @@ class CommandParser:
 
         for var in set(to_subst):
             val = self.env.get_var(var)
-            substitute_dict[var] = val
+            if not val:
+                str_to_change = str_to_change.replace("$" + var, "", 1)
+            else:
+                substitute_dict[var] = val
+
         substitute_dict = {k: v for k, v in substitute_dict.items() if k}
         for var, values in substitute_dict.items():
             if values:
                 regex = r"""("\$""" + var + r""")|(?!\')\$""" + var + r"""(?!\')"""
                 str_to_change = re.sub(regex, str(values[-1]), str_to_change, c[var])
-                print(str_to_change)
                 str_to_change = re.sub("\\s+", ' ', str_to_change)
 
         stop_symbols = ["'", '"']
