@@ -8,7 +8,7 @@ Software Design Course Homeworks.
 
 ```commandInterface``` - command interface which is implemented in each command (method ```invoke()```).
 
-```commandParse``` - command parser which supports variables assignment (```let``` and ```=```), makes substitutions from environment and distinguishes pipelines and command with their arguments 
+```commandParse``` - command parser which supports variables assignment (```let``` and ```=```), makes substitutions from environment and distinguishes pipelines and command with their arguments like ``` echo input | wc ```
 
 ```env``` - environment (map of variables and their values within environment with getter and setter)
 
@@ -25,8 +25,6 @@ Software Design Course Homeworks.
 * ```echo```
 
 * ```pwd```
-
-Also assignments like ```x=2``` and ```let x=1``` are supported.
 
 To launch Bash run ```main.py```
 
