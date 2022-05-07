@@ -26,6 +26,7 @@ Software Design Course Homeworks.
 
 * ```pwd```
 
+Also assignments like ```x=2``` and ```let x=1``` are supported.
 
 To launch Bash run ```main.py```
 
