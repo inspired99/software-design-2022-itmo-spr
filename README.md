@@ -26,6 +26,8 @@ Software Design Course Homeworks.
 
 * ```pwd```
 
+Flags can be combined as follows ```wc -l -w``` (using dash only).
+
 To launch Bash run ```main.py```
 
 To run tests from Bash folder of the project: ```python3 -m unittest``` 
