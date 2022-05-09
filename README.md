@@ -26,7 +26,7 @@ Software Design Course Homeworks.
 
 * ```pwd```
 
-Flags can be combined as follows ```wc -l -w``` (using dash).
+Flags can be combined as follows ```wc -l -w <file>``` (using dash).
 
 To launch Bash run ```main.py```
 
