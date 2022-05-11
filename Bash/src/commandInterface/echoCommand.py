@@ -7,5 +7,13 @@ class Echo(Command):
     """
 
     @staticmethod
-    def invoke(args: str) -> str:
-        return args
+    def invoke(args: list) -> str:
+        result = ''
+        if Echo.from_pipeline:
+            if Echo.has_args:
+                result = "".join(args)
+        else:
+            result = "".join(args)
+
+        Echo.from_pipeline = False
+        return result

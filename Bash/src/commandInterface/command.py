@@ -5,10 +5,12 @@ class Command:
     """
     Common command interface for all deriving commands.
     """
-    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit']
+    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit', 'grep']
+    from_pipeline = False
+    has_args = False
 
     @staticmethod
-    def invoke(args: str) -> str:
+    def invoke(args):
         """
         Execution of a command, each command
         has it's own realization of this method.
@@ -17,33 +19,31 @@ class Command:
         return ""
 
     @staticmethod
-    def _flagged(flags: list, args: str):
+    def _flagged(flags: list, args: list) -> list:
         """
         Method to determine flag.
         :param flags: list of flags
         :param args:  input string of args
         :return: empty flag if flag is absent or determined flag
         """
+        if not args:
+            return []
+
         flagged = False
-        flag_command = ""
+        flag_commands = []
 
         for flag in flags:
-            if flag in args.split():
-                if flagged:
-                    raise FlagError("Too many flags for this command.")
+            if flag in args:
                 flagged = True
-                flag_command = flag
+                flag_commands.append(flag)
 
-        if "-" in args:
-            if not flagged:
-                if args[args.find("-") + 1]:
-                    try:
-                        if args[args.find("-") + 2].isspace():
-                            raise FlagError("No such flag supported by this command.")
-                    except IndexError:
-                        raise FlagError("Wrong position of flag.")
-            if flagged:
-                if args.split().index(flag_command) != 0:
-                    raise FlagError("Wrong position of flag.")
+        if flagged:
+            if not args[0].startswith("-"):
+                raise FlagError("Wrong position of flag.")
 
-        return flag_command
+        for arg in args:
+            if arg.startswith("-"):
+                if not flagged:
+                    raise FlagError("No such flag supported for this command.")
+
+        return flag_commands

@@ -10,51 +10,70 @@ class Cat(Command):
     -n -> numbers of lines.
     -s -> omit blank lines
     """
-    flags = ['-n', '-s']
+    flags = ['-s', '-n']
 
     @staticmethod
-    def invoke(args: str) -> str:
+    def invoke(args):
 
         if not args:
             raise FileNotFoundError("No files to read from.")
 
         flagged = Command._flagged(Cat.flags, args)
-
-        files = args.split()
-
-        result = []
-
-        for filename in files:
-            if filename != flagged:
-
-                try:
-                    with open(filename) as file:
-                        content = Cat._read_file(file, flagged)
-                        result.append(content)
-                except FileNotFoundError:
-                    try:
-                        with open(os.path.join(os.getcwd(), filename), "r") as f:
-                            content = Cat._read_file(f, flagged)
-                            result.append(content)
-                    except FileNotFoundError:
-                        raise FileNotFoundError(f"No such file: {filename}")
-
-        output = ""
-        for file_output in result:
-            output = output.join(file_output)
+        files = args
+        result = Cat._read_files(files, flagged)
+        output = "".join(result)
 
         return output
 
     @staticmethod
-    def _read_file(file, flag) -> list:
+    def _extract_context(file, flags) -> list:
+        result = file.readlines()
+        if not flags:
+            return result
+
+        for flag in flags:
+            cur_result = []
+            if flag == "-s":
+                lines = [i for i in result if i != '\n' and i != '']
+                cur_result.extend(lines)
+
+            if flag == "-n":
+                ind = 1
+                temp_data = []
+                if not cur_result:
+                    cur_result = result
+
+                for line in cur_result:
+                    line = (f'{ind} ' + line)
+                    ind += 1
+                    temp_data.append(line)
+                cur_result = temp_data
+
+            result = cur_result
+
+        return result
+
+    @staticmethod
+    def _read_files(files, flags: list) -> list:
         result = []
-        if flag == "-n":
-            for index, line in enumerate(file):
-                result.append(f'{index + 1} ' + line)
-        elif flag == "-s":
-            lines = [i for i in file.readlines() if i != '\n']
-            result = lines
-        else:
-            result = file.readlines()
+
+        for filename in files:
+            if Cat.from_pipeline:
+                Cat.from_pipeline = False
+                return filename
+
+            if filename not in flags:
+                content = []
+                try:
+                    with open(filename) as file:
+                        content = Cat._extract_context(file, flags)
+                except FileNotFoundError:
+                    try:
+                        if not content:
+                            with open("".join((os.getcwd(), filename))) as f:
+                                content = Cat._extract_context(f, flags)
+                    except FileNotFoundError:
+                        raise FileNotFoundError(f"No such file: {filename}")
+                result += content
 
         return result

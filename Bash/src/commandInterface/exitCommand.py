@@ -9,5 +9,5 @@ class Exit(Command):
     """
 
     @staticmethod
-    def invoke(args="") -> str:
+    def invoke(args=None) -> str:
         return sys.exit('Command Line is terminated. Goodbye!')

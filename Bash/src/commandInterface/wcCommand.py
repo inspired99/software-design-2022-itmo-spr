@@ -1,3 +1,5 @@
+import os
+
 from src.commandInterface.command import Command
 
 
@@ -10,36 +12,59 @@ class Wc(Command):
     -c -> number of characters in file.
     -w -> number of words in file.
     """
-    flags = ['-l', '-c', '-w']
+    flags = ['-l', '-w', '-c']
 
     @staticmethod
-    def invoke(args: str) -> str:
-        flagged = Command._flagged(Wc.flags, args)
+    def invoke(args: list) -> str:
+        if not args:
+            raise FileNotFoundError("No files to read from.")
+
+        flag_commands = Command._flagged(Wc.flags, args)
+
+        flagged = flag_commands != []
 
         result = ""
-        for filename in args.split():
-            if filename != flagged:
+        for filename in args:
+            if filename not in flag_commands:
                 file = Wc.read_file(filename)
 
                 res = Wc.count_l_w_c(file)
                 file_title = filename.split('/')[-1]
                 new_line = '\n'
-                if flagged:
-                    result = result + f" {res[flagged]}" + f" {file_title} " + f"{new_line}"
-                else:
-                    result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + f"{new_line}"
 
-        result = result.lstrip()
+                if not Wc.from_pipeline:
+                    if flagged:
+                        for flag in flag_commands:
+                            result = result + f" {res[flag]}"
+                        result = result + f" {file_title}" + f"{new_line}"
+                    else:
+                        result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + \
+                                 f"{new_line}"
+                else:
+                    if flagged:
+                        for flag in flag_commands:
+                            result = result + f" {res[flag]}"
+                        result = result + f" {file_title}" + f"{new_line}"
+                    else:
+                        result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}" + f"{new_line}"
+
+        Wc.from_pipeline = False
+        result = result.strip()
         return result
 
     @staticmethod
     def read_file(path):
+
+        if Wc.from_pipeline:
+            print('from pipe')
+            return path
+
         try:
             with open(path) as file:
                 result = file.read()
         except FileNotFoundError:
             try:
-                with open(f"os.path.join(os.getcwd(), f'{path}')", "r") as f:
+                with open("".join((os.getcwd(), path))) as f:
                     result = f.read()
             except FileNotFoundError:
                 raise FileNotFoundError(f"No such file: {path}")
