@@ -66,6 +66,11 @@ class TestCommands(TestCase):
                          '6 wc_test_1.txt')
         self.assertEqual(self.wc.invoke(['-c', f'{os.path.dirname(__file__)}/test_files/wc_test_1.txt']),
                          '27 wc_test_1.txt')
+        self.assertEqual(self.wc.invoke(['-c', '-l', f'{os.path.dirname(__file__)}/test_files/wc_test_1.txt']),
+                         '3 27 wc_test_1.txt')
+        self.assertEqual(self.wc.invoke(['-c', '-w', f'{os.path.dirname(__file__)}/test_files/wc_test_1.txt']),
+                         '6 27 wc_test_1.txt')
+
 
         with self.assertRaises(FlagError):
             self.wc.invoke(['-f', 'arg'])
