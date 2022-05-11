@@ -12,18 +12,20 @@ class Wc(Command):
     -c -> number of characters in file.
     -w -> number of words in file.
     """
-    flags = ['-l', '-c', '-w']
+    flags = ['-l', '-w', '-c']
 
     @staticmethod
     def invoke(args: list) -> str:
         if not args:
             raise FileNotFoundError("No files to read from.")
 
-        flagged = Command._flagged(Wc.flags, args)
+        flag_commands = Command._flagged(Wc.flags, args)
+
+        flagged = flag_commands != []
 
         result = ""
         for filename in args:
-            if filename != flagged:
+            if filename not in flag_commands:
                 file = Wc.read_file(filename)
 
                 res = Wc.count_l_w_c(file)
@@ -32,12 +34,17 @@ class Wc(Command):
 
                 if not Wc.from_pipeline:
                     if flagged:
-                        result = result + f" {res[flagged]}" + f" {file_title} " + f"{new_line}"
+                        for flag in flag_commands:
+                            result = result + f" {res[flag]}"
+                        result = result + f" {file_title}" + f"{new_line}"
                     else:
-                        result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + f"{new_line}"
+                        result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}  {file_title}" + \
+                                 f"{new_line}"
                 else:
                     if flagged:
-                        result = result + f" {res[flagged]}" + f"{new_line}"
+                        for flag in flag_commands:
+                            result = result + f" {res[flag]}"
+                        result = result + f" {file_title}" + f"{new_line}"
                     else:
                         result = result + f" {res['-l']}" + f" {res['-w']}" + f" {res['-c']}" + f"{new_line}"
 

@@ -19,7 +19,7 @@ class Command:
         return ""
 
     @staticmethod
-    def _flagged(flags: list, args: list):
+    def _flagged(flags: list, args: list) -> list:
         """
         Method to determine flag.
         :param flags: list of flags
@@ -27,19 +27,23 @@ class Command:
         :return: empty flag if flag is absent or determined flag
         """
         if not args:
-            return
+            return []
 
         flagged = False
-        flag_command = ""
+        flag_commands = []
 
         for flag in flags:
-            if flag in args[0]:
+            if flag in args:
                 flagged = True
-                flag_command = flag
+                flag_commands.append(flag)
+
+        if flagged:
+            if not args[0].startswith("-"):
+                raise FlagError("Wrong position of flag.")
 
         for arg in args:
             if arg.startswith("-"):
                 if not flagged:
                     raise FlagError("No such flag supported for this command.")
 
-        return flag_command
+        return flag_commands

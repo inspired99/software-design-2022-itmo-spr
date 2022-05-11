@@ -36,11 +36,13 @@ class TestCommands(TestCase):
             """1 this are real numbers of lines:\n2 2\n3 3\n4 4\n5 5\n6 6\n""")
         self.assertEqual(self.cat.invoke(['-s', f'{os.path.dirname(__file__)}/test_files/cat_test_4.txt']),
                          'next line should be omitted:\nSuccess!\n')
+        self.assertEqual(self.cat.invoke(['-s', '-n', f'{os.path.dirname(__file__)}/test_files/cat_test_4.txt']),
+                         '1 next line should be omitted:\n2 Success!\n')
 
         with self.assertRaises(FlagError):
             self.cat.invoke(['arg1', '-n'])
             self.cat.invoke(['-f', 'arg1'])
-            self.cat.invoke(['-s', '-n args'])
+            self.cat.invoke(['-s', '-v'])
 
     def test_exit(self) -> None:
         with self.assertRaises(SystemExit):
