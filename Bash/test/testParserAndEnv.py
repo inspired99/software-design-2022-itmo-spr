@@ -86,7 +86,7 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.parser.subst_vars('echo "$a"'), 'echo new')
         self.assertEqual(self.parser.subst_vars('echo $a | cat $file | cat $file'), 'echo new | cat C:/home | cat '
                                                                                     'C:/home')
-        self.assertEqual(self.parser.subst_vars("cat '$file'"), "cat $file")
+        self.assertEqual(self.parser.subst_vars("cat '$file'"), "cat '$file'")
         self.assertEqual(self.parser.subst_vars('echo $a $avb'), 'echo new 6')
         self.assertEqual(self.parser.subst_vars('echo "$a" $avb'), 'echo new 6')
         self.assertEqual(self.parser.subst_vars("""echo '$a' "$a" """), "echo $a new")
