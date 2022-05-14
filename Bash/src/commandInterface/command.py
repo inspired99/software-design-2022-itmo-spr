@@ -7,6 +7,7 @@ class Command:
     """
     command_list = ['cat', 'wc', 'pwd', 'echo', 'exit', 'grep']
     from_pipeline = False
+    args_previous = []
     has_args = False
 
     @staticmethod

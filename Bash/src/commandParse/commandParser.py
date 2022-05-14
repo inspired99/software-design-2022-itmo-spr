@@ -150,6 +150,9 @@ class CommandParser:
         regex_dollar_sign = r"([^']\$[\S]*)"
         replace_dict = {"$": " ", '"': ' '}
         to_subst = re.findall(regex_dollar_sign, str_to_change)
+        if not to_subst:
+            return input_string
+
         for k, v in replace_dict.items():
             to_subst = [i.replace(k, v) + " " for i in to_subst]
             to_subst = [i.strip().split() for i in to_subst]

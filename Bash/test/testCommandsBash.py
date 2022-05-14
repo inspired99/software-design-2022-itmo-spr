@@ -7,6 +7,7 @@ from src.commandInterface.commandExceptions import FlagError
 from src.commandInterface.echoCommand import Echo
 from src.commandInterface.exitCommand import Exit
 from src.commandInterface.externalCommand import ExternalCommand
+from src.commandInterface.grepCommand import Grep
 from src.commandInterface.pwdCommand import Pwd
 from src.commandInterface.wcCommand import Wc
 
@@ -21,6 +22,7 @@ class TestCommands(TestCase):
         self.exit = Exit
         self.echo = Echo
         self.wc = Wc
+        self.grep = Grep
 
     def test_main(self) -> None:
         self.assertTrue(self.bash())
@@ -99,7 +101,43 @@ class TestCommands(TestCase):
         ExternalCommand.external_command_name = 'git'
         self.assertEqual(self.test_bash.run('git status'), ExternalCommand.external_output)
 
-    def test_grep(self) -> None:
+    def test_grep_common(self) -> None:
+        self.assertEqual(self.grep.invoke(['gr', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']),
+                         """gr\ngrep\ngrepped\ngrip\ngrIp\ngreat\nground rgound""")
+        self.assertEqual(self.grep.invoke(['g', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']),
+                         """gr\na g 123123 adg gp\nrGg\ngrep\ngrepped\ngrip\ngrIp\ngreat\nnot gtear\nground rgound""")
+        self.assertEqual(self.grep.invoke(['12', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']),
+                         "a g 123123 adg gp")
+        self.assertEqual(self.grep.invoke(['d', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']),
+                         'a g 123123 adg gp\ncommand\ngrepped\nground rgound\nend')
+        self.assertEqual(self.grep.invoke(['ski', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']),
+                         "skip")
+        self.assertEqual(self.grep.invoke(['321', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']), '')
+        self.assertEqual(self.grep.invoke(['Grep', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt']), '')
+        # TODO regexp test
+        # TODO multiple files
+
+        with self.assertRaises(FileNotFoundError):
+            self.grep.invoke([f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt'])
+            self.grep.invoke(['abcd'])
+            self.grep.invoke(['pattern', f'{os.path.dirname(__file__)}/test_files/grep_test_10.txt'])
+
+        with self.assertRaises(FlagError):
+            self.grep.invoke(['test_pattern', '-f', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt'])
+            self.grep.invoke(['test_pattern', '-i', '-s', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt'])
+            self.grep.invoke(['test_pattern', '-A', '-1', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt'])
+            self.grep.invoke(['test_pattern', '-A', f'{os.path.dirname(__file__)}/test_files/grep_test_1.txt'])
+
+    def test_grep_A(self) -> None:
+        pass
+
+    def test_grep_i(self) -> None:
+        pass
+
+    def test_grep_w(self) -> None:
+        pass
+
+    def test_grep_pipeline(self) -> None:
         pass
 
     def test_subst(self) -> None:

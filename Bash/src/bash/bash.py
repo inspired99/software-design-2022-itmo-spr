@@ -44,6 +44,7 @@ class CommandLine:
             number_of_pipelines = len(parsed_pipelines_and_commands.keys()) - 1
 
             for command, args in parsed_pipelines_and_commands.items():
+
                 is_external = False
                 if command[0] not in self.command_map and command[0] not in self.external_commands:
                     continue
@@ -56,16 +57,17 @@ class CommandLine:
                 else:
                     command_instance = self.command_map[command[0]]
                 command_instance.has_args = False
+                command_instance.from_pipeline = False
+                command_instance.args_previous = []
 
                 if args:
                     command_instance.has_args = True
                 if results:
                     args = args or [results[-1]]
 
-                command_instance.from_pipeline = False
-
                 if number_of_pipelines > 0 and results:
                     command_instance.from_pipeline = True
+                    command_instance.args_previous += results
 
                 try:
                     result = command_instance.invoke(args)
