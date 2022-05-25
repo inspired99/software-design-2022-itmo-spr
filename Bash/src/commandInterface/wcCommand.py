@@ -56,7 +56,6 @@ class Wc(Command):
     def read_file(path):
 
         if Wc.from_pipeline:
-            print('from pipe')
             return path
 
         try:

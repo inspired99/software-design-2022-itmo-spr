@@ -21,7 +21,8 @@ class Grep(Command):
 
     @staticmethod
     def invoke(args: list) -> str:
-        args += Grep.args_previous
+        if Grep.args_previous:
+            args += Grep.args_previous
         if not args:
             raise FileNotFoundError('No files to read from.')
         Grep.pattern = ''
@@ -36,7 +37,6 @@ class Grep(Command):
                 file_content = filename
             else:
                 file_content = Grep.read_file(filename)
-
             if not flagged:
                 res = Grep.search_in_text(file_content, Grep.pattern, "")
 
@@ -77,15 +77,17 @@ class Grep(Command):
     @staticmethod
     def search_in_text(text_content: list, pattern: str, flag: str, optional=0) -> list:
         result = []
-        if not list:
+        if not text_content:
             return result
 
         if isinstance(text_content, str):
-            text_content = [text_content]
+            if not Grep.from_pipeline:
+                text_content = [text_content]
+            else:
+                text_content = [i + "\n" for i in text_content.split("\n") if i]
 
         if not flag:
             result = [i for i in text_content if pattern in i]
-            return result
 
         if flag == "-i":
             result = [i for i in text_content if pattern.lower() in i.lower()]

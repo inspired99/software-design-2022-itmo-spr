@@ -1,11 +1,14 @@
 second file
 more text here added
 git push -f
+jam123
 force
+text here
 java language pc
 this is text File
 some number 123456789
 123
+this text
 not a real text
 ja v a
 jam
@@ -14,4 +17,6 @@ how is jamm
 Jam
 jam in Jam
 wow
+Jam
+jammy
 Wow!

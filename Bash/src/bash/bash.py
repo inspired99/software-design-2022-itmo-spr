@@ -56,9 +56,7 @@ class CommandLine:
 
                 else:
                     command_instance = self.command_map[command[0]]
-                command_instance.has_args = False
-                command_instance.from_pipeline = False
-                command_instance.args_previous = []
+
 
                 if args:
                     command_instance.has_args = True
@@ -77,6 +75,10 @@ class CommandLine:
                 except exceptions_command as e:
                     print(str(e))
                     continue
+
+                command_instance.has_args = False
+                command_instance.from_pipeline = False
+                command_instance.args_previous = []
 
                 if number_of_pipelines > 0 and len(results) < number_of_pipelines:
                     results.append(result)
