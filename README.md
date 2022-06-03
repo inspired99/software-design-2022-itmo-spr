@@ -1,6 +1,8 @@
 # software-design-2022-itmo-spr
 Software Design Course Homeworks.
 
+[SD Homework Part 2](https://github.com/inspired99/roguelike-game)
+
 ## Elementary Bash.
 **Project Structure**:
 
