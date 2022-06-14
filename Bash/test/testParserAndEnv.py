@@ -60,6 +60,7 @@ class TestParserAndEnv(TestCase):
                                                          'test_file3.txt']}))
 
         with self.assertRaises(PipelineError):
+            self.parser.parse_pipelines_and_commands("cat .gitignore |")
             self.parser.parse_pipelines_and_commands(" | ")
             self.parser.parse_pipelines_and_commands(" cate 1.txt | wc | pwd ")
             self.parser.parse_pipelines_and_commands(" pwd | pwd |")

@@ -2,7 +2,6 @@ import re
 from collections import Counter, defaultdict
 from copy import deepcopy
 
-from src.commandInterface.externalCommand import ExternalCommand
 from src.commandParse.parseExceptions import AssignmentError, CommandNotFoundError, PipelineError, ImbalancedQuotesError
 from src.env.env import Environment
 
@@ -80,12 +79,23 @@ class CommandParser:
         """
         if not input_string.strip():
             return {}
-        regex = r"([^|]*)"
-        command_list = CommandParser.command_list_tokens + ['let', '=', "$"] + ExternalCommand.external_commands_list
+        regex = r"([^\|]*)"
+        command_list = CommandParser.command_list_tokens + ['let', '=', "$"]
         regex_quotes = r"""([^'"]*)(['"][^'"]*["'])*([^'"]*)"""
 
-        split_pipelines = [i.strip() for i in re.findall(regex, input_string) if i]
+        raw_split_pipelines = [i.strip() for i in re.findall(regex, input_string)]
+        num_of_pipes = 0
+        for i in range(len(raw_split_pipelines) - 1):
+            if raw_split_pipelines[i] != '' and raw_split_pipelines[i + 1] == '':
+                continue
+            num_of_pipes += 1
+
+        split_pipelines = [i for i in raw_split_pipelines if i]
         pipelines_content = {k: v for k, v in enumerate(split_pipelines)}
+
+        if num_of_pipes >= len(split_pipelines):
+            raise PipelineError("Wrong pipeline syntax: empty pipeline detected.")
+
         for k, v in pipelines_content.items():
             if not v:
                 raise PipelineError("Missing correct command in pipeline.")
