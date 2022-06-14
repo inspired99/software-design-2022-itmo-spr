@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from src.bash.bash import CommandLine
 from src.commandInterface.catCommand import Cat
+from src.commandInterface.command import Command
 from src.commandInterface.commandExceptions import FlagError
 from src.commandInterface.echoCommand import Echo
 from src.commandInterface.exitCommand import Exit
@@ -45,8 +46,10 @@ class TestCommands(TestCase):
             self.cat.invoke(['-s', '-v'])
 
     def test_exit(self) -> None:
-        with self.assertRaises(SystemExit):
-            self.exit.invoke()
+        self.assertFalse(Command.exit_status)
+        self.exit.invoke()
+        self.assertTrue(Command.exit_status)
+
 
     def test_echo(self) -> None:
         self.assertEqual(self.echo.invoke(['a']), 'a')

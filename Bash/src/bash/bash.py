@@ -1,6 +1,7 @@
 import sys
 
 from src.commandInterface.catCommand import Cat
+from src.commandInterface.command import Command
 from src.commandInterface.commandExceptions import FlagError
 from src.commandInterface.echoCommand import Echo
 from src.commandInterface.exitCommand import Exit
@@ -43,7 +44,9 @@ class CommandLine:
             number_of_pipelines = len(parsed_pipelines_and_commands.keys()) - 1
 
             for command, args in parsed_pipelines_and_commands.items():
+                Command.exit_status = False
                 is_external = False
+
                 if command[0] not in self.command_map and command[0] not in self.external_commands:
                     continue
 
@@ -79,7 +82,11 @@ class CommandLine:
 
                 if not is_external:
                     results.append(result)
-                    print(results[-1])
+                    if not Command.exit_status:
+                        print(results[-1])
+
+            if parsed_pipelines_and_commands and Command.exit_status:
+                sys.exit('Command Line is terminated. Goodbye!')
 
             if default_inp:
                 if results:

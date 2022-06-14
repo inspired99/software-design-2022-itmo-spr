@@ -7,6 +7,8 @@ class Command:
     """
     from_pipeline = False
     has_args = False
+    exit_status = False
+
 
     @staticmethod
     def invoke(args):

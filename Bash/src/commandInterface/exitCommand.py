@@ -1,5 +1,3 @@
-import sys
-
 from src.commandInterface.command import Command
 
 
@@ -9,5 +7,5 @@ class Exit(Command):
     """
 
     @staticmethod
-    def invoke(args=None) -> str:
-        return sys.exit('Command Line is terminated. Goodbye!')
+    def invoke(args=None) -> None:
+        Command.exit_status = True
