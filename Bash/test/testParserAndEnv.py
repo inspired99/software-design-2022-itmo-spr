@@ -2,7 +2,7 @@ from collections import defaultdict
 from unittest import TestCase
 
 from src.commandParse.commandParser import CommandParser
-from src.commandParse.parseExceptions import AssignmentError, PipelineError
+from src.commandParse.parseExceptions import AssignmentError, PipelineError, ImbalancedQuotesError
 from src.env.env import Environment
 
 
@@ -92,3 +92,14 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.parser.subst_vars("""echo '$a' "$a" """), "echo $a new")
         self.assertEqual(self.parser.subst_vars('$p$d'), 'pwd')
         self.assertEqual(self.parser.subst_vars('echo $b'), 'echo')
+
+    def test_quotes(self):
+        self.assertEqual(self.parser.subst_vars("echo 'a' "), "echo a")
+        self.assertEqual(self.parser.subst_vars("""echo "a" """), "echo a")
+        self.assertEqual(self.parser.subst_vars("echo '$a'"), 'echo $a')
+        self.assertEqual(self.parser.subst_vars('echo " a a a "'), 'echo a a a')
+
+        with self.assertRaises(ImbalancedQuotesError):
+            self.parser.subst_vars('echo "a ')
+            self.parser.subst_vars('echo a | cat " text ')
+            self.parser.subst_vars('wc "ab.txt', )

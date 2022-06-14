@@ -5,7 +5,6 @@ class Command:
     """
     Common command interface for all deriving commands.
     """
-    command_list = ['cat', 'wc', 'pwd', 'echo', 'exit']
     from_pipeline = False
     has_args = False
 

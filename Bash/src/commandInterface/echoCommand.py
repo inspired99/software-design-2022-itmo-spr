@@ -11,9 +11,9 @@ class Echo(Command):
         result = ''
         if Echo.from_pipeline:
             if Echo.has_args:
-                result = "".join(args)
+                result = " ".join(args)
         else:
-            result = "".join(args)
+            result = " ".join(args)
 
         Echo.from_pipeline = False
         return result

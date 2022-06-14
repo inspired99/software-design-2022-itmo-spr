@@ -2,9 +2,8 @@ import re
 from collections import Counter, defaultdict
 from copy import deepcopy
 
-from src.commandInterface.command import Command
 from src.commandInterface.externalCommand import ExternalCommand
-from src.commandParse.parseExceptions import AssignmentError, CommandNotFoundError, PipelineError
+from src.commandParse.parseExceptions import AssignmentError, CommandNotFoundError, PipelineError, ImbalancedQuotesError
 from src.env.env import Environment
 
 
@@ -17,6 +16,7 @@ class CommandParser:
     3) Parse commands inside each pipeline
     4) Parse bindings to update or add variables inside environment
     """
+    command_list_tokens = ['cat', 'wc', 'pwd', 'echo', 'exit']
 
     def __init__(self):
         self.env = Environment()
@@ -81,7 +81,7 @@ class CommandParser:
         if not input_string.strip():
             return {}
         regex = r"([^|]*)"
-        command_list = Command.command_list + ['let', '=', "$"] + ExternalCommand.external_commands_list
+        command_list = CommandParser.command_list_tokens + ['let', '=', "$"] + ExternalCommand.external_commands_list
         regex_quotes = r"""([^'"]*)(['"][^'"]*["'])*([^'"]*)"""
 
         split_pipelines = [i.strip() for i in re.findall(regex, input_string) if i]
@@ -168,15 +168,39 @@ class CommandParser:
         substitute_dict = {k: v for k, v in substitute_dict.items() if k}
         for var, values in substitute_dict.items():
             if values:
-                regex = r"""("\$""" + var + r""")|(?!\')\$""" + var + r"""(?!\')"""
+                regex = r"""("\$""" + var + r"\""")|(?!\')\$""" + var + r"""(?!\')"""
                 str_to_change = re.sub(regex, str(values[-1]), str_to_change, c[var])
                 str_to_change = re.sub("\\s+", ' ', str_to_change)
 
-        stop_symbols = ["'", '"']
-        for symbol in stop_symbols:
-            str_to_change = str_to_change.replace(symbol, '')
+        regex_single_quote = r"""[\'][^\']*"""
+        regex_double_quote = r"""[\"][^\"]*"""
+        split_single_quote = re.split(regex_single_quote, str_to_change)
+        split_double_quote = re.split(regex_double_quote, str_to_change)
+
+        for i in range(len(split_single_quote)):
+            if i == len(split_single_quote) - 1:
+                if split_single_quote[i] == '' and split_single_quote[i - 1] != '':
+                    raise ImbalancedQuotesError("Imbalanced single quote met.")
+            else:
+                if split_single_quote[i] == '':
+                    if split_single_quote[i + 1] == '':
+                        str_to_change = str_to_change.replace("'", '', 2)
+                        continue
+                    else:
+                        raise ImbalancedQuotesError("Imbalanced single quote met.")
+
+        for i in range(len(split_double_quote)):
+            if i == len(split_double_quote) - 1:
+                if split_double_quote[i] == '' and split_double_quote[i - 1] != '':
+                    raise ImbalancedQuotesError("Imbalanced double quote met.")
+            else:
+                if split_double_quote[i] == '':
+                    if split_double_quote[i + 1] == '':
+                        str_to_change = str_to_change.replace('"', '', 2)
+                        continue
+                    else:
+                        raise ImbalancedQuotesError("Imbalanced double quote met.")
 
         str_to_change = " ".join(str_to_change.split())
         str_to_change = str_to_change.strip()
-
         return str_to_change
