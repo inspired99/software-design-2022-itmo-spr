@@ -2,6 +2,11 @@
 Software Design Course Homeworks.
 
 ## Elementary Bash.
+
+Was implemented using Python 3.
+
+GitHub actions were used as CI.
+
 **Project Structure**:
 
 ```bash``` - command line functionality like running bash and reading from std input in a loop
@@ -27,6 +32,8 @@ Software Design Course Homeworks.
 * ```pwd```
 
 Flags can be combined as follows ```wc -l -w <file>``` (using dash).
+
+**Instructions**
 
 To launch Bash run ```main.py``` by using command ```python3 -m src.main``` from Bash folder.
 
