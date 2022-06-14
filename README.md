@@ -28,7 +28,7 @@ Software Design Course Homeworks.
 
 Flags can be combined as follows ```wc -l -w <file>``` (using dash).
 
-To launch Bash run ```main.py```
+To launch Bash run ```main.py``` by using command ```python3 -m src.main``` from Bash folder.
 
 To run tests from Bash folder of the project: ```python3 -m unittest``` 
 
