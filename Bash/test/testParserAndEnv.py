@@ -15,7 +15,7 @@ class TestParserAndEnv(TestCase):
         self.env.set_var('var', 'a')
         self.env.set_var('b', 'C:/home/Apps')
 
-    def test_parse_binds(self):
+    def test_parse_binds(self) -> None:
         environment = self.parser.env
         self.assertEqual(self.parser.parse_bind(""), None)
         self.parser.parse_bind("let a=5 x=1")
@@ -37,7 +37,7 @@ class TestParserAndEnv(TestCase):
             self.parser.parse_bind(" var= 1")
             self.parser.parse_bind(" let x = 2")
 
-    def test_parse_pipelines_commands(self):
+    def test_parse_pipelines_commands(self) -> None:
         self.assertEqual(self.parser.parse_pipelines_and_commands(" echo a | wc 1.txt | wc  2.txt | wc 3.txt"),
                          defaultdict(list, {('echo', 0): ['a'],
                                             ('wc', 1): ['1.txt'],
@@ -67,7 +67,7 @@ class TestParserAndEnv(TestCase):
             self.parser.parse_pipelines_and_commands("cat ")
             self.parser.parse_pipelines_and_commands("cwd")
 
-    def test_environment(self):
+    def test_environment(self) -> None:
         self.assertEqual(self.env.get_var('a'), [5])
         self.assertEqual(self.env.get_var('var'), ['a'])
         self.env.set_var('a', 'new')
@@ -75,7 +75,7 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.env.get_var('c'), '')
         self.assertEqual(self.env.get_var('ab'), '')
 
-    def test_substitution_vars(self):
+    def test_substitution_vars(self) -> None:
         self.parser.env.set_var('a', 5)
         self.parser.env.set_var('avb', 6)
         self.parser.env.set_var('file', 'C:/home')
@@ -93,7 +93,7 @@ class TestParserAndEnv(TestCase):
         self.assertEqual(self.parser.subst_vars('$p$d'), 'pwd')
         self.assertEqual(self.parser.subst_vars('echo $b'), 'echo')
 
-    def test_quotes(self):
+    def test_quotes(self) -> None:
         self.assertEqual(self.parser.subst_vars("echo 'a' "), "echo a")
         self.assertEqual(self.parser.subst_vars("""echo "a" """), "echo a")
         self.assertEqual(self.parser.subst_vars("echo '$a'"), 'echo $a')
@@ -103,3 +103,4 @@ class TestParserAndEnv(TestCase):
             self.parser.subst_vars('echo "a ')
             self.parser.subst_vars('echo a | cat " text ')
             self.parser.subst_vars('wc "ab.txt', )
+            self.parser.subst_vars("echo ' a a")
