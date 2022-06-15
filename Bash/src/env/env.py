@@ -17,3 +17,4 @@ class Environment:
 
     def set_var(self, var, val):
         self.__env_vars[var].append(val)
+        
