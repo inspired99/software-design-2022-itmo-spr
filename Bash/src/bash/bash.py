@@ -9,7 +9,7 @@ from src.commandInterface.externalCommand import ExternalCommand
 from src.commandInterface.pwdCommand import Pwd
 from src.commandInterface.wcCommand import Wc
 from src.commandParse.commandParser import CommandParser
-from src.commandParse.parseExceptions import AssignmentError, ParseException, PipelineError, CommandNotFoundError
+from src.commandParse.parseExceptions import AssignmentError, ParseException, PipelineError
 
 
 class CommandLine:
@@ -21,11 +21,9 @@ class CommandLine:
         print('Command Line started. Hello!')
         self.parser = CommandParser()
         self.command_map = {'wc': Wc, 'pwd': Pwd, 'cat': Cat, 'echo': Echo, 'exit': Exit}
-        self.external_commands = {'vim': ExternalCommand,
-                                  'nano': ExternalCommand, 'git': ExternalCommand}
 
     def run(self, default_inp=None):
-        exceptions_parser = (ParseException, PipelineError, AssignmentError, CommandNotFoundError)
+        exceptions_parser = (ParseException, PipelineError, AssignmentError)
         exceptions_command = (FileNotFoundError, FlagError)
         while True:
             if not default_inp:
@@ -45,15 +43,14 @@ class CommandLine:
 
             for command, args in parsed_pipelines_and_commands.items():
                 Command.exit_status = False
-                is_external = False
 
-                if command[0] not in self.command_map and command[0] not in self.external_commands:
+                if command[0] not in self.command_map:
+                    if results:
+                        args = args or [results[-1]]
+                    ExternalCommand.command_name = command[0]
+                    res_ext = ExternalCommand.invoke(args)
+                    results.append(res_ext)
                     continue
-
-                if command[0] in self.external_commands:
-                    command_instance = self.external_commands[command[0]]
-                    command_instance.external_command_name = command[0]
-                    is_external = True
 
                 else:
                     command_instance = self.command_map[command[0]]
@@ -80,10 +77,13 @@ class CommandLine:
                     results.append(result)
                     continue
 
-                if not is_external:
-                    results.append(result)
-                    if not Command.exit_status:
-                        print(results[-1])
+                results.append(result)
+
+            if not Command.exit_status and results:
+                if results[-1]:
+                    print(results[-1])
+                else:
+                    print()
 
             if parsed_pipelines_and_commands and Command.exit_status:
                 sys.exit('Command Line is terminated. Goodbye!')

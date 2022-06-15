@@ -22,6 +22,7 @@ class TestCommands(TestCase):
         self.exit = Exit
         self.echo = Echo
         self.wc = Wc
+        self.external_command = ExternalCommand
 
     def test_main(self) -> None:
         self.assertTrue(self.bash())
@@ -49,7 +50,6 @@ class TestCommands(TestCase):
         self.assertFalse(Command.exit_status)
         self.exit.invoke()
         self.assertTrue(Command.exit_status)
-
 
     def test_echo(self) -> None:
         self.assertEqual(self.echo.invoke(['a']), 'a')
@@ -95,6 +95,7 @@ class TestCommands(TestCase):
         self.assertEqual(self.test_bash.run('pwd | echo'),
                          '')  # - in reality we get \n and it's ok, this is just for tests
         self.assertEqual(self.test_bash.run('pwd | echo test'), 'test')
+        self.assertEqual(self.test_bash.run('echo a | exit | echo c'), 'c')
 
         with self.assertRaises(SystemExit):
             self.test_bash.run(f'wc {os.path.dirname(__file__)}/test_files/wc_test_1.txt | exit')
@@ -103,8 +104,9 @@ class TestCommands(TestCase):
             self.test_bash.run(' | | ')
 
     def test_external_command(self) -> None:
-        ExternalCommand.external_command_name = 'git'
-        self.assertEqual(self.test_bash.run('git status'), ExternalCommand.external_output)
+        self.assertEqual(self.test_bash.run('ls'),
+                         '__init__.py\n__pycache__\ntestCommandsBash.py\ntest_files\ntestParserAndEnv.py\n')
+        self.assertEqual(self.test_bash.run('git status | echo a'), 'a')
 
     def test_subst(self) -> None:
         self.test_bash.run('a=6')

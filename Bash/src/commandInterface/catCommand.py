@@ -13,7 +13,7 @@ class Cat(Command):
     flags = ['-s', '-n']
 
     @staticmethod
-    def invoke(args):
+    def invoke(args) -> str:
 
         if not args:
             raise FileNotFoundError("No files to read from.")

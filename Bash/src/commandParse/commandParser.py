@@ -2,7 +2,7 @@ import re
 from collections import Counter, defaultdict
 from copy import deepcopy
 
-from src.commandParse.parseExceptions import AssignmentError, CommandNotFoundError, PipelineError, ImbalancedQuotesError
+from src.commandParse.parseExceptions import AssignmentError, PipelineError, ImbalancedQuotesError
 from src.env.env import Environment
 
 
@@ -80,7 +80,6 @@ class CommandParser:
         if not input_string.strip():
             return {}
         regex = r"([^\|]*)"
-        command_list = CommandParser.command_list_tokens + ['let', '=', "$"]
         regex_quotes = r"""([^'"]*)(['"][^'"]*["'])*([^'"]*)"""
 
         raw_split_pipelines = [i.strip() for i in re.findall(regex, input_string)]
@@ -107,15 +106,9 @@ class CommandParser:
 
         for order, elem in pipelines_content.items():
             command = elem.split()[0]
-            is_command = False
-            if command in command_list:
-                is_command = True
 
             if "let" in command or "=" in command or "$" in command:
                 continue
-
-            if not is_command:
-                raise CommandNotFoundError(f"Command not found: {command}")
 
             elem = elem.replace(command, '', 1)
             all_args = re.findall(regex_quotes, elem)

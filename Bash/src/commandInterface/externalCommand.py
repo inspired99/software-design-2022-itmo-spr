@@ -7,13 +7,14 @@ class ExternalCommand(Command):
     """
     External commands from real bash.
     """
+    command_name = None
 
     @staticmethod
     def invoke(args: list):
 
         try:
-            bash = subprocess.run([ExternalCommand.external_command_name, *args])
-            return bash.stdout
+            external_bash = subprocess.run([ExternalCommand.command_name, *args], stdout=subprocess.PIPE, text=True)
+            return external_bash.stdout
+
         except (OSError, TypeError) as e:
             print(str(e))
-
