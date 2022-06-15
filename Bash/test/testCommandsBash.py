@@ -104,8 +104,8 @@ class TestCommands(TestCase):
             self.test_bash.run(' | | ')
 
     def test_external_command(self) -> None:
-        self.assertEqual(self.test_bash.run('ls'),
-                         '__init__.py\n__pycache__\ntestCommandsBash.py\ntest_files\ntestParserAndEnv.py\n')
+        self.external_command.command_name = 'echo'
+        self.assertEqual(self.external_command.invoke(['ext']), 'ext')
         self.assertEqual(self.test_bash.run('git status | echo a'), 'a')
 
     def test_subst(self) -> None:
